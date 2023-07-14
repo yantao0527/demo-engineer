@@ -33,6 +33,7 @@ class Dir(File):
         self.files = []
 
     def load(self):
+        if not self.path.is_dir(): return
         for x in self.path.iterdir():
             if x.is_dir():
                 dir = Dir(x)
@@ -53,7 +54,7 @@ class Dir(File):
         file.dirty = True
         self.files.append(file)
 
-    def get_file(self, filename):
+    def get_file(self, filename) -> File:
         for x in self.files:
             if x.filename == filename:
                 return x
@@ -79,11 +80,14 @@ class Project:
         self.root = root
         path = Path(root).absolute()
         self.root_dir = Dir(path)
+        self.root_dir.load()
         self.name = path.name
         self.src_dir: Dir = self.root_dir.get_dir(SRC_DIR)
+        self.log_dir: Dir = self.root_dir.get_dir(AI_LOG)
 
     def load_all_file(self):
-        self.root_dir.load()
+        #self.root_dir.load()
+        pass
 
     def save_all_file(self):
         self.root_dir.save()
@@ -108,4 +112,10 @@ class Project:
             file.update(content)
         else:
             self.src_dir.add_file(filename, content)
+
+    def set_log_file(self, filename, content):
+        self.log_dir.add_file(filename, content)
+
+    def get_log_file(self, filename):
+        return self.log_dir.get_file(filename).content
         

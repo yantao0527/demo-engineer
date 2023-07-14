@@ -1,5 +1,7 @@
 import shutil
+import re
 from pathlib import Path
+
 
 from engineer.ai.project import Project
 from engineer.ai.code import Code
@@ -38,7 +40,21 @@ def test_generate_code_and_save():
     files = step.from_prompt(ai_prompt)
     for (filename, content) in files:
         project2.set_src_file(filename, content)
+    project2.set_log_file("code_prompt.log", step.prompt_content)
+    project2.set_log_file("code_output.log", step.code_content)
     project2.save_all_file()
+
+def test_parse_code():
+    log = Path("../projects/test_test/ai_log/code_output.log")
+    output = log.read_text()
+    #print(output)
+
+    step = Code()
+    files = step.parse(output)
+    for (filename, content) in files:
+        print(filename)
+        print(content)
+        
 
 def test_env_clear():
     if Path(TEST_ROOT).is_dir():
@@ -61,4 +77,6 @@ if __name__ == "__main__":
 
     test_env_clear()
     test_generate_code_and_save()
+
+    # test_parse_code()
 

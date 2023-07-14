@@ -35,20 +35,22 @@ class Code:
         chat_prompt = ChatPromptTemplate.from_messages(all_messages)
 
         prompt = chat_prompt.format_messages(input=use_clarify)
-        #print(prompt)
+        self.prompt_content = chat_prompt.format(input=use_clarify)
+        print(self.prompt_content)
 
         chat = ChatOpenAI(temperature=0)
         output = chat.predict_messages(prompt)
-        self.output_content = output.content
-        return self.output_content
+        self.code_content = output.content
+        return self.code_content
     
-    def parse(self, chat): # -> List[Tuple[str, str]]:
+    def parse_0(self, chat): # -> List[Tuple[str, str]]:
         # Get all ``` blocks and preceding filenames
         regex = r"(\S+)\n\s*```[^\n]*\n(.+?)```"
         matches = re.finditer(regex, chat, re.DOTALL)
 
         files = []
         for match in matches:
+            print(match.group(1))
             # Strip the filename of any non-allowed characters and convert / to \
             path = re.sub(r'[<>"|?*]', "", match.group(1))
 
@@ -60,6 +62,7 @@ class Code:
 
             # Remove trailing ]
             path = re.sub(r"\]$", "", path)
+            print(path)
 
             # Get the code
             code = match.group(2)
@@ -74,6 +77,43 @@ class Code:
         # Return the files
         self.output_files = files
         return files
+    
+    def parse(self, output):
+        filename_pattern = re.compile(r"^.*`(.*)`")
+        code_sep_pattern = re.compile(r"^```")
+        def parse_filename(line):
+            m = filename_pattern.match(line)
+            if m:
+                return m.group(1)
+            return None
+        def parse_code_sep(line):
+            m = code_sep_pattern.match(line)
+            return m != None
+        code_flag = False
+        code_result = []
+        doc_result = []
+        filename = None
+        files = []
+        for line in output.splitlines():
+            if code_flag:
+                if parse_code_sep(line):
+                    code_flag = not code_flag
+                    files.append( (filename, "\n".join(code_result)) )
+                    filename = None
+                else:
+                    code_result.append(line)
+            else:
+                if not filename:
+                    filename = parse_filename(line)
+                if parse_code_sep(line):
+                    code_flag = not code_flag
+                    code_result = []
+                else:
+                    doc_result.append(line)
+        files.append( ("code_readme.md", "\n".join(doc_result)) )
+        self.output_files = files
+        return files
+
 
 
 if __name__ == '__main__':
