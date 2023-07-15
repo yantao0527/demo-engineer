@@ -23,7 +23,7 @@ class Code:
         step.question(prompt)
         step.assumpt()
         output = self.from_clarify(step)
-        print(output)
+        # print(output)
         return self.parse(output)
 
     def from_clarify(self, clarify: Clarify):
@@ -36,7 +36,7 @@ class Code:
 
         prompt = chat_prompt.format_messages(input=use_clarify)
         self.prompt_content = chat_prompt.format(input=use_clarify)
-        print(self.prompt_content)
+        # print(self.prompt_content)
 
         chat = ChatOpenAI(temperature=0)
         output = chat.predict_messages(prompt)
@@ -78,17 +78,23 @@ class Code:
         self.output_files = files
         return files
     
-    def parse(self, output):
-        filename_pattern = re.compile(r"^.*`(.*)`")
+    def parse(self, output: str):
+        filename_pattern = re.compile(r"\w+[.]\w+")
         code_sep_pattern = re.compile(r"^```")
-        def parse_filename(line):
-            m = filename_pattern.match(line)
-            if m:
-                return m.group(1)
-            return None
+        filename_notfound = 0
         def parse_code_sep(line):
             m = code_sep_pattern.match(line)
             return m != None
+        def parse_filename(last_lines):
+            matches = filename_pattern.findall(last_lines[-1])
+            if len(matches) > 0:
+                return matches[0]
+            matches =  filename_pattern.findall(last_lines[-2])
+            if len(matches) > 0:
+                return matches[0]
+            filename_notfound += 1
+            return "code" + str(filename_notfound)
+
         code_flag = False
         code_result = []
         doc_result = []
@@ -96,18 +102,17 @@ class Code:
         files = []
         for line in output.splitlines():
             if code_flag:
-                if parse_code_sep(line):
+                if parse_code_sep(line):  ## code section end
                     code_flag = not code_flag
                     files.append( (filename, "\n".join(code_result)) )
                     filename = None
                 else:
                     code_result.append(line)
             else:
-                if not filename:
-                    filename = parse_filename(line)
-                if parse_code_sep(line):
+                if parse_code_sep(line):  ## code section begin
                     code_flag = not code_flag
                     code_result = []
+                    filename = parse_filename(doc_result)
                 else:
                     doc_result.append(line)
         files.append( ("code_readme.md", "\n".join(doc_result)) )

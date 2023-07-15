@@ -5,6 +5,23 @@ from pathlib import Path
 
 from engineer.ai.project import Project
 from engineer.ai.code import Code
+from engineer.ai.task import (
+    task_create_project_with_prompt,
+    task_generate_project_code,
+)
+
+def test_print_files(files):
+    for (filename, content) in files:
+        print()
+        print(filename)
+        print("----------------------")
+        print(content)
+        
+def test_code_from_prompt():
+    from engineer.ai.prompt import prompt_example
+    step2 = Code()
+    output = step2.from_prompt(prompt_example)
+    test_print_files(output)
 
 # load prompt from an exist project
 def test_get_ai_prompt(root):
@@ -26,23 +43,10 @@ def test_save_src():
 
 def test_generate_code_and_save():
     project = Project(TEST_ROOT)
-    # from engineer.ai.prompt import prompt_example
-    # project.set_ai_prompt(prompt_example)
     project.set_ai_prompt(TEST_PROMPT)
     project.save_all_file()
     
-    project2 = Project(TEST_ROOT)
-    project2.load_all_file()
-    ai_prompt = project2.get_ai_prompt()
-    print(ai_prompt)
-
-    step = Code()
-    files = step.from_prompt(ai_prompt)
-    for (filename, content) in files:
-        project2.set_src_file(filename, content)
-    project2.set_log_file("code_prompt.log", step.prompt_content)
-    project2.set_log_file("code_output.log", step.code_content)
-    project2.save_all_file()
+    task_generate_project_code(TEST_ROOT)
 
 def test_parse_code():
     log = Path("../projects/test_test/ai_log/code_output.log")
@@ -51,10 +55,8 @@ def test_parse_code():
 
     step = Code()
     files = step.parse(output)
-    for (filename, content) in files:
-        print(filename)
-        print(content)
-        
+    test_print_files(files)
+
 
 def test_env_clear():
     if Path(TEST_ROOT).is_dir():
@@ -68,6 +70,8 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
 
+    test_code_from_prompt()
+
     #test_get_ai_prompt(""../projects/example")
 
     # test_env_clear()
@@ -75,8 +79,8 @@ if __name__ == "__main__":
     # test_get_ai_prompt(TEST_ROOT)
     # test_save_src()
 
-    test_env_clear()
-    test_generate_code_and_save()
+    # test_env_clear()
+    # test_generate_code_and_save()
 
     # test_parse_code()
 
