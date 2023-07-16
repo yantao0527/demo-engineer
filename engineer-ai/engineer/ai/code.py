@@ -6,9 +6,6 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
 )
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationChain
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
 
 from engineer.ai.prompt import (
     generate_code,
@@ -118,14 +115,3 @@ class Code:
         files.append( ("code_readme.md", "\n".join(doc_result)) )
         self.output_files = files
         return files
-
-
-
-if __name__ == '__main__':
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    from engineer.ai.prompt import prompt_example
-    step2 = Code()
-    output = step2.from_prompt(prompt_example)
-    print(output)

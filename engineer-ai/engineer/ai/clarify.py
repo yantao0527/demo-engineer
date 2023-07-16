@@ -36,20 +36,4 @@ class Clarify:
         dicts = messages_to_dict(self.memory.chat_memory.messages)
         return messages_from_dict(dicts)
 
-if __name__ == '__main__':
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    from engineer.ai.prompt import (
-        prompt_example,
-    )
-    step = Clarify()
-    output = step.question(prompt_example)
-    print(output)
-    output = step.assumpt()
-    print(output)
-    print()
-    print(step.history())
-
-
 
