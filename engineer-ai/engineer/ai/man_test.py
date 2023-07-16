@@ -4,11 +4,26 @@ from pathlib import Path
 
 
 from engineer.ai.project import Project
+from engineer.ai.clarify import Clarify
 from engineer.ai.code import Code
+from engineer.ai.entrypoint import Entrypoint
 from engineer.ai.task import (
     task_create_project_with_prompt,
     task_generate_project_code,
 )
+
+def test_clarify():
+    from engineer.ai.prompt import (
+        prompt_example,
+    )
+    step = Clarify()
+    output = step.question(prompt_example)
+    print(output)
+    output = step.assumpt()
+    print(output)
+    print()
+    print(step.history())
+
 
 def test_print_files(files):
     for (filename, content) in files:
@@ -22,6 +37,10 @@ def test_code_from_prompt():
     step2 = Code()
     output = step2.from_prompt(prompt_example)
     test_print_files(output)
+    step3 = Entrypoint()
+    content = step3.generate(step2.code_content)
+    print(content)
+
 
 # load prompt from an exist project
 def test_get_ai_prompt(root):
@@ -62,6 +81,7 @@ def test_env_clear():
     if Path(TEST_ROOT).is_dir():
         shutil.rmtree(TEST_ROOT)
 
+
 #TEST_ROOT="/tmp/projects/example"
 TEST_ROOT="../projects/test_test"
 TEST_PROMPT="We are writing snake in python. MVC components split in separate files. Keyboard control."
@@ -70,17 +90,19 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
 
-    test_code_from_prompt()
+    # test_code_from_prompt()
 
-    #test_get_ai_prompt(""../projects/example")
+    # test_get_ai_prompt(""../projects/example")
 
     # test_env_clear()
     # test_create_project_with_prompt()
     # test_get_ai_prompt(TEST_ROOT)
     # test_save_src()
 
-    # test_env_clear()
-    # test_generate_code_and_save()
+    test_env_clear()
+    test_generate_code_and_save()
 
     # test_parse_code()
+
+    # test_clarify()
 

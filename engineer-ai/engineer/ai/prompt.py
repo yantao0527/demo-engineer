@@ -73,6 +73,23 @@ Make sure that files contain all imports, types etc. The code should be fully fu
 Before you finish, double check that all parts of the architecture is present in the files.
 """
 
+entrypoint_generate = """
+You will get information about a codebase that is currently on disk in
+the current folder.
+
+From this you will answer with code blocks that includes all the necessary
+unix terminal commands to
+a) install dependencies
+b) run all necessary parts of the codebase (in parallel if necessary).
+
+Do not install globally. Do not use sudo.
+
+Do not explain the code, just give the commands.
+
+Do not use placeholders, use example values (like . for a folder argument)
+if necessary.
+"""
+
 prompt_example = """
 Create a simple to-do list app using HTML, CSS, and JavaScript. 
 Store tasks in local storage and allow users to add, edit, and delete tasks."
