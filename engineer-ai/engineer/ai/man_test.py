@@ -1,5 +1,6 @@
 import shutil
 import re
+import os
 from pathlib import Path
 
 
@@ -11,6 +12,7 @@ from engineer.ai.task import (
     task_create_project_with_prompt,
     task_generate_project_code,
 )
+from engineer.ai.analysis import Analysis
 
 def test_clarify():
     from engineer.ai.prompt import (
@@ -81,6 +83,12 @@ def test_env_clear():
     if Path(TEST_ROOT).is_dir():
         shutil.rmtree(TEST_ROOT)
 
+def test_analysis_code():
+    step = Analysis()
+    dir = step.github_clone("https://github.com/yantao0527/demo-engineer.git")
+    print(dir)
+    step.index_codebase(dir)
+    
 
 #TEST_ROOT="/tmp/projects/example"
 TEST_ROOT="../projects/test_test"
@@ -99,10 +107,12 @@ if __name__ == "__main__":
     # test_get_ai_prompt(TEST_ROOT)
     # test_save_src()
 
-    test_env_clear()
-    test_generate_code_and_save()
+    # test_env_clear()
+    # test_generate_code_and_save()
 
     # test_parse_code()
 
     # test_clarify()
+
+    test_analysis_code()
 
