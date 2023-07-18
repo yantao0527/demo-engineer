@@ -83,11 +83,23 @@ def test_env_clear():
     if Path(TEST_ROOT).is_dir():
         shutil.rmtree(TEST_ROOT)
 
-def test_analysis_code():
+def test_analysis_code_index():
     step = Analysis()
     dir = step.github_clone("https://github.com/yantao0527/demo-engineer.git")
     print(dir)
     step.index_codebase(dir)
+
+def test_analysis_code_qa():
+    step = Analysis()
+    questions = [
+        "Is the class `Project` too complicated? How to improve it?",
+        "What do `man_test.py` do?",
+    ]
+    result = step.question(questions)
+    for (question, answer) in result:
+        print()
+        print(question)
+        print(answer)
     
 
 #TEST_ROOT="/tmp/projects/example"
@@ -114,5 +126,6 @@ if __name__ == "__main__":
 
     # test_clarify()
 
-    test_analysis_code()
+    #test_analysis_code_index()
+    test_analysis_code_qa()
 
