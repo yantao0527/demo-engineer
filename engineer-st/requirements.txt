@@ -1,0 +1,13 @@
+python-dotenv
+cryptography
+streamlit
+streamlit_chat
+
+langchain
+openai
+tiktoken
+
+pypdf2
+faiss-cpu
+google-search-results
+pymysql
