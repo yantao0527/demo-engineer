@@ -17,7 +17,6 @@ def task_create_project_with_prompt(root: str, prompt: str):
     content = step3.generate(step.code_content)
     project.set_src_file("run.sh", content)
     project.save_all_file()
-    project.save_all_file()
     return project
 
 def task_generate_project_code(root: str):

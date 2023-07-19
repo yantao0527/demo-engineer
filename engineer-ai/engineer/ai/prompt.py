@@ -92,5 +92,5 @@ if necessary.
 
 prompt_example = """
 Create a simple to-do list app using HTML, CSS, and JavaScript. 
-Store tasks in local storage and allow users to add, edit, and delete tasks."
+Store tasks in local storage and allow users to add, edit, and delete tasks.
 """

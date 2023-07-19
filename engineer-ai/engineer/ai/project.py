@@ -113,6 +113,9 @@ class Project:
         else:
             self.src_dir.add_file(filename, content)
 
+    def list_src_file(self):
+        return [(x.filename, x.content) for x in self.src_dir.files]
+
     def set_log_file(self, filename, content):
         self.log_dir.add_file(filename, content)
 

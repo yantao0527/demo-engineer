@@ -22,8 +22,12 @@ class Code:
         output = self.from_clarify(step)
         # print(output)
         return self.parse(output)
-
+    
     def from_clarify(self, clarify: Clarify):
+        prompt = self.make_prompt_from_clarify(clarify)
+        return self.generate_code_content(prompt)
+
+    def make_prompt_from_clarify(self, clarify: Clarify):
         prompt = generate_code + "\nUseful to know:\n" + philosphy
         system_message_prompt = SystemMessagePromptTemplate.from_template(prompt)
         human_message_prompt = HumanMessagePromptTemplate.from_template("{input}")
@@ -34,7 +38,9 @@ class Code:
         prompt = chat_prompt.format_messages(input=use_clarify)
         self.prompt_content = chat_prompt.format(input=use_clarify)
         # print(self.prompt_content)
+        return prompt
 
+    def generate_code_content(self, prompt):
         chat = ChatOpenAI(temperature=0)
         output = chat.predict_messages(prompt)
         self.code_content = output.content
