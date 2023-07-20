@@ -39,7 +39,7 @@ class Analysis:
 
         embeddings = OpenAIEmbeddings(disallowed_special=())
         DATASET_PATH=os.getenv("ACTIVELOOP_PATH")
-        db = DeepLake.from_documents(docs, dataset_path=DATASET_PATH, embedding=embeddings)
+        db = DeepLake.from_documents(texts, dataset_path=DATASET_PATH, embedding=embeddings)
         print(DATASET_PATH)
 
     def question(self, questions):

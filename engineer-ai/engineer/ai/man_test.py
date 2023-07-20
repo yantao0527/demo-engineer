@@ -92,6 +92,7 @@ def test_analysis_code_index():
 def test_analysis_code_qa():
     step = Analysis()
     questions = [
+        "Which language do the code use?",
         "Is the class `Project` too complicated? How to improve it?",
         "What do `man_test.py` do?",
     ]
@@ -101,12 +102,13 @@ def test_analysis_code_qa():
         print(question)
         print(answer)
     
-
-#TEST_ROOT="/tmp/projects/example"
-TEST_ROOT="../projects/test_test"
-TEST_PROMPT="We are writing snake in python. MVC components split in separate files. Keyboard control."
+## man_test.py manual test for core functionality
 
 if __name__ == "__main__":
+    #TEST_ROOT="/tmp/projects/example"
+    TEST_ROOT="../projects/test_test"
+    TEST_PROMPT="We are writing snake in python. MVC components split in separate files. Keyboard control."
+
     from dotenv import load_dotenv
     load_dotenv()
 
