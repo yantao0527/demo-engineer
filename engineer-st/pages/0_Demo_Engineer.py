@@ -1,14 +1,9 @@
 import webbrowser
 from time import sleep
 import os
-import shutil
 import logging
-from pathlib import Path
 
-from engineer.ai.project import Project
-from engineer.ai.clarify import Clarify
-from engineer.ai.code import Code
-from engineer.ai.entrypoint import Entrypoint
+from engineer.ai.step import CodeStep
 
 #logging.basicConfig(level = logging.DEBUG,format='%(levelname)s-%(message)s')
 
@@ -44,49 +39,31 @@ def demo_engineer():
         else:
             return st.progress(info["percentage"], text=info["text"])
         
-    def prepare_env(title):
-        ws = os.getenv("PROJECT_WORKSPACE")
-        root = ws + "/" + "_".join(title.split(" "))
-        if Path(root).is_dir():
-            shutil.rmtree(root)
-        return root
-
     def step_progress(demo_title, demo_idea):
+        ws = os.getenv("PROJECT_WORKSPACE")
+        step = CodeStep(ws, demo_title, demo_idea)
         bar = progressBar("start")
-        root = prepare_env(demo_title)
-        project = Project(root)
-        project.load_all_file()
-        project.set_ai_prompt(demo_idea)
 
-        step1 = Clarify()
-        step1.question(demo_idea)
-        step1.assumpt()
+        step.clarify()
         progressBar("clarify", bar)
 
-        step2 = Code()
-        prompt_messages = step2.make_prompt_from_clarify(step1)
+        prompt_content = step.make_prompt()
         with st.expander("Log: Clarified Prompt"):
-            st.text(step2.prompt_content)
+            st.text(prompt_content)
 
-        output = step2.generate_code_content(prompt_messages)
-        progressBar("code", bar)
+        code_content = step.gen_code()
         with st.expander("Log: Code Output"):
-            st.text(step2.code_content)
+            st.text(code_content)
 
-        files = step2.parse(output)
-        for (filename, content) in files:
-            project.set_src_file(filename, content)
-        project.set_log_file("code_prompt.log", step2.prompt_content)
-        project.set_log_file("code_output.log", step2.code_content)
+        step.parse_files()
 
-        step3 = Entrypoint()
-        content = step3.generate(step2.code_content)
-        project.set_src_file("run.sh", content)
+        step.gen_entry()
         progressBar("entry", bar)
-        project.save_all_file()
+
+        step.save()
         progressBar("successed", bar)
 
-        src_files = project.list_src_file()
+        src_files = step.list_src_file()
         tabs = st.tabs([x[0] for x in src_files])
         for idx, tab in enumerate(tabs):
             with tab:
