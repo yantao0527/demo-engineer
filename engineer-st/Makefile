@@ -9,7 +9,7 @@ install:
 	python -m pip install -r requirements.txt
 
 site:
-	streamlit run Home.py
+	PYTHONPATH=../engineer-ai streamlit run Home.py
 
 search:
 	python scripts/search.py

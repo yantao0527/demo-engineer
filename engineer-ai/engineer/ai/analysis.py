@@ -13,15 +13,28 @@ PROJECT_WORKSPACE="/tmp/projects"
 
 class Analysis:
 
-    def github_clone(self, github_url):
-        name = github_url.split("/")[-1].split(".")[0]
+    def load_vectordb(self, github_url):
+        self.github_url = github_url
+        self.name = github_url.split("/")[-1].split(".")[0]
+        self.dataset_path = "hub://{organziation}/{name}".format(
+                organziation=os.getenv("ACTIVELOOP_ORG"), name=self.name)
+        print(self.dataset_path)
+        embeddings = OpenAIEmbeddings(disallowed_special=())
+        self.db = DeepLake(
+            dataset_path=self.dataset_path,
+            embedding_function=embeddings,
+        )
+        return len(self.db.vectorstore) > 0
+
+
+    def github_clone(self):
         path = Path(PROJECT_WORKSPACE)
         path.mkdir(parents=True, exist_ok=True)
-        root_dir = PROJECT_WORKSPACE + "/" + name
+        root_dir = PROJECT_WORKSPACE + "/" + self.name
         path = Path(root_dir)
         if path.is_dir():
             shutil.rmtree(root_dir)
-        subprocess.check_call(["git", "clone", github_url, root_dir])
+        subprocess.check_call(["git", "clone", self.github_url, root_dir])
         return root_dir
 
     def index_codebase(self, root_dir):
@@ -38,19 +51,13 @@ class Analysis:
         texts = text_splitter.split_documents(docs)
 
         embeddings = OpenAIEmbeddings(disallowed_special=())
-        DATASET_PATH=os.getenv("ACTIVELOOP_PATH")
-        db = DeepLake.from_documents(texts, dataset_path=DATASET_PATH, embedding=embeddings)
-        print(DATASET_PATH)
+        self.db = DeepLake.from_documents(texts, dataset_path=self.dataset_path, embedding=embeddings)
+
+    def delete_dataset(self):
+        self.db.delete_dataset()
 
     def question(self, questions):
-        embeddings = OpenAIEmbeddings(disallowed_special=())
-        DATASET_PATH=os.getenv("ACTIVELOOP_PATH")
-        db = DeepLake(
-            dataset_path=DATASET_PATH,
-            read_only=True,
-            embedding_function=embeddings,
-        )
-        retriever = db.as_retriever()
+        retriever = self.db.as_retriever()
         retriever.search_kwargs["distance_metric"] = "cos"
         retriever.search_kwargs["fetch_k"] = 100
         retriever.search_kwargs["maximal_marginal_relevance"] = True

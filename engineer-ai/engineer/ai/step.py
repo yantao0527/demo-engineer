@@ -55,3 +55,21 @@ class CodeStep:
 
     def list_src_file(self):
         return self.project.list_src_file()
+    
+
+from engineer.ai.analysis import Analysis
+
+class AnalysisStep:
+    def __init__(self, github_url):
+        self.step = Analysis()
+        self.ok = self.step.load_vectordb(github_url)
+    
+    def make_index(self):
+        if self.ok:
+            self.step.delete_dataset()
+        self.step.github_clone()
+        self.step.index_codebase()
+
+    def question(self, questions):
+        result = self.step.question(questions)
+        return result

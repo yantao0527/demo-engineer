@@ -85,29 +85,41 @@ def test_env_clear():
 
 def test_analysis_code_index():
     step = Analysis()
-    dir = step.github_clone("https://github.com/yantao0527/demo-engineer.git")
+    isload = step.load_vectordb(TEST_GITHUB)
+    if isload:
+        step.delete_dataset()
+        print("Delete dataset")
+    dir = step.github_clone()
     print(dir)
     step.index_codebase(dir)
+    return step
 
-def test_analysis_code_qa():
+def test_analysis_load():
     step = Analysis()
+    isload = step.load_vectordb(TEST_GITHUB)
+    print("isLoad: ")
+    print(isload)
+    return step
+
+def test_analysis_code_qa(step):
     questions = [
-        "Which language do the code use?",
-        "Is the class `Project` too complicated? How to improve it?",
-        "What do `man_test.py` do?",
+        "Which modules of langchain do the code use?",
+        "Is the implementation of the class `Project` too complicated? How to improve it?",
+        "What do the file `man_test.py` do?",
     ]
     result = step.question(questions)
     for (question, answer) in result:
         print()
-        print(question)
-        print(answer)
+        print("Question: " + question)
+        print("Answer:" + answer)
     
-## man_test.py manual test for core functionality
+#TEST_ROOT="/tmp/projects/example"
+TEST_ROOT="../projects/test_test"
+TEST_PROMPT="We are writing snake in python. MVC components split in separate files. Keyboard control."
+TEST_GITHUB="https://github.com/yantao0527/demo-engineer.git"
 
 if __name__ == "__main__":
-    #TEST_ROOT="/tmp/projects/example"
-    TEST_ROOT="../projects/test_test"
-    TEST_PROMPT="We are writing snake in python. MVC components split in separate files. Keyboard control."
+    
 
     from dotenv import load_dotenv
     load_dotenv()
@@ -128,6 +140,7 @@ if __name__ == "__main__":
 
     # test_clarify()
 
-    #test_analysis_code_index()
-    test_analysis_code_qa()
+    step = test_analysis_load()
+    #step = test_analysis_code_index()
+    test_analysis_code_qa(step)
 
