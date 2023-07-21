@@ -67,8 +67,8 @@ class AnalysisStep:
     def make_index(self):
         if self.ok:
             self.step.delete_dataset()
-        self.step.github_clone()
-        self.step.index_codebase()
+        root_dir = self.step.github_clone()
+        self.step.index_codebase(root_dir)
 
     def question(self, questions):
         result = self.step.question(questions)

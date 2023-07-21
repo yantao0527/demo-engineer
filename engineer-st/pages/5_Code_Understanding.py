@@ -32,12 +32,16 @@ def understanding():
     if st.button('Run') and github_url and question_text:
         step = AnalysisStep(github_url)
         if not step.ok:
+            st.write("Create index...... according of size of the codebase, need a few minutes")
             step.make_index()
         elif force:
+            st.write("Recreate index...... according of size of the codebase, need a few minutes")
             step.make_index()
         else:
-            st.write("Skip Index")
+            st.write("Skip creating index.")
+        st.write("Answer all the questions...... according of number of questions, need a few minutes")
         result = step.question(question_text.split("\n"))
+        st.write("Show Question And Answer Result")
         fmt_result = ["## {question}\n{answer}\n".format(question=x[0], answer=x[1]) for x in result]
         st.markdown("\n".join(fmt_result))
 

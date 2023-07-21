@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     # test_clarify()
 
-    step = test_analysis_load()
-    #step = test_analysis_code_index()
-    test_analysis_code_qa(step)
+    #step = test_analysis_load()
+    step = test_analysis_code_index()
+    #test_analysis_code_qa(step)
 
