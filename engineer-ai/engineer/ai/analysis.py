@@ -38,11 +38,18 @@ class Analysis:
         return root_dir
 
     def index_codebase(self, root_dir):
+        def filter_ignore(dirnames):
+            ignore_dirs = [".git", ".vscode", ".github"]
+            for item in ignore_dirs:
+                if item in dirnames:
+                    dirnames.remove(item)
         docs = []
         for dirpath, dirnames, filenames in os.walk(root_dir):
+            filter_ignore(dirnames)
             for file in filenames:
                 try:
                     loader = TextLoader(os.path.join(dirpath, file), encoding="utf-8")
+                    # print(os.path.join(dirpath, file))
                     docs.extend(loader.load_and_split())
                 except Exception as e:
                     pass
