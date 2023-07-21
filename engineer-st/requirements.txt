@@ -9,5 +9,3 @@ tiktoken
 
 pypdf2
 faiss-cpu
-google-search-results
-pymysql
